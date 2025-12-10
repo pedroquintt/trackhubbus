@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Passageiro - Ônibus Palhoça</title>
+<link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+<div class="nav">
+  <div class="brand"><span class="brand-dot"></span> Ônibus Palhoça</div>
+  <div class="actions"><button class="link" onclick="location.href='/'">Sair</button></div>
+</div>
+<div class="container">
+  <h1>Passageiro</h1>
+  <div class="card">
+    <h2>Cadastro de Passageiro</h2>
+    <form id="formPassageiro" class="grid">
+      <div class="field"><div class="label">Nome</div><input type="text" id="passNome" placeholder="Nome" required /></div>
+      <div class="field"><div class="label">Foto</div><input type="file" id="passFoto" accept="image/*" /></div>
+      <button type="submit" class="btn">Cadastrar</button>
+    </form>
+    <div id="passResultado" class="result"></div>
+  </div>
+  <div class="card">
+    <h2>Verificação de Rotas</h2>
+    <div class="toolbar">
+      <input type="text" id="buscaRotas" placeholder="Pesquisar linhas" />
+      <button class="btn" id="btnBuscar">Pesquisar</button>
+    </div>
+    <ul id="listaRotas" class="list"></ul>
+  </div>
+  <div class="card">
+    <h2>Ônibus Próximos</h2>
+    <div class="toolbar">
+      <button class="btn" id="btnGeo">Usar minha localização</button>
+      <input type="text" id="minhaPos" placeholder="-27.65,-48.65" />
+      <input type="text" id="destPos" placeholder="Destino -27.66,-48.65" />
+      <button class="btn secondary" id="btnProximos">Ver ônibus indo ao destino</button>
+    </div>
+    <ul id="listaOnibus" class="list"></ul>
+  </div>
+  <div class="card">
+    <h2>Rota em Tempo Real</h2>
+    <canvas id="mapa" width="860" height="480"></canvas>
+    <div id="statusRota" class="result"></div>
+  </div>
+  <div class="card">
+    <h2>Horários</h2>
+    <div id="horariosBox" class="list"></div>
+  </div>
+  <div class="card">
+    <h2>Planejar Viagem</h2>
+    <form id="formPlan" class="grid">
+      <div class="field"><div class="label">Origem (lat,lng)</div><input type="text" id="planOrig" placeholder="-27.65,-48.65" /></div>
+      <div class="field"><div class="label">Destino (lat,lng)</div><input type="text" id="planDest" placeholder="-27.66,-48.65" /></div>
+      <button type="submit" class="btn">Calcular</button>
+    </form>
+    <div id="planResultado" class="result"></div>
+  </div>
+  <div class="card">
+    <h2>Acessibilidade</h2>
+    <div class="hint">Modo texto alto contraste e leitura simples.</div>
+  </div>
+  <div class="card">
+    <h2>Anúncios</h2>
+    <div id="adsBox" class="grid"></div>
+  </div>
+</div>
+<script src="/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
+  <style>
+    .box{fill:#fff;stroke:#000;stroke-width:1}
+    .title{font:700 14px Segoe UI, Arial;}
+    .text{font:400 12px Segoe UI, Arial;}
+    .edge{stroke:#000;stroke-width:1;marker-end:url(#arrow)}
+  </style>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="strokeWidth" markerWidth="8" markerHeight="6" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#000"/>
+    </marker>
+  </defs>
+
+  <rect x="60" y="60" width="240" height="160" class="box"/>
+  <text x="70" y="80" class="title">Motorista</text>
+  <text x="70" y="100" class="text">id: INTEGER</text>
+  <text x="70" y="115" class="text">nome: TEXT</text>
+  <text x="70" y="130" class="text">cpf: TEXT</text>
+  <text x="70" y="145" class="text">telefone: TEXT</text>
+  <text x="70" y="160" class="text">foto: TEXT</text>
+  <text x="70" y="175" class="text">password: TEXT</text>
+
+  <rect x="380" y="60" width="240" height="140" class="box"/>
+  <text x="390" y="80" class="title">Ônibus</text>
+  <text x="390" y="100" class="text">id: INTEGER</text>
+  <text x="390" y="115" class="text">placa: TEXT</text>
+  <text x="390" y="130" class="text">modelo: TEXT</text>
+  <text x="390" y="145" class="text">capacidade: INTEGER</text>
+
+  <rect x="700" y="60" width="240" height="140" class="box"/>
+  <text x="710" y="80" class="title">Linha</text>
+  <text x="710" y="100" class="text">id: INTEGER</text>
+  <text x="710" y="115" class="text">nome: TEXT</text>
+  <text x="710" y="130" class="text">origem: TEXT</text>
+  <text x="710" y="145" class="text">destino: TEXT</text>
+
+  <rect x="540" y="230" width="220" height="100" class="box"/>
+  <text x="550" y="250" class="title">OnibusLinha</text>
+  <text x="550" y="270" class="text">onibus_id: INTEGER</text>
+  <text x="550" y="285" class="text">linha_id: INTEGER</text>
+
+  <rect x="60" y="260" width="300" height="180" class="box"/>
+  <text x="70" y="280" class="title">DriverSession</text>
+  <text x="70" y="300" class="text">id: INTEGER</text>
+  <text x="70" y="315" class="text">motorista_id: INTEGER</text>
+  <text x="70" y="330" class="text">onibus_id: INTEGER</text>
+  <text x="70" y="345" class="text">linha_id: INTEGER</text>
+  <text x="70" y="360" class="text">ts_start: TEXT</text>
+  <text x="70" y="375" class="text">active: INTEGER</text>
+  <text x="70" y="390" class="text">ts_end: TEXT</text>
+
+  <rect x="380" y="260" width="320" height="200" class="box"/>
+  <text x="390" y="280" class="title">TrackingPoint</text>
+  <text x="390" y="300" class="text">id: INTEGER</text>
+  <text x="390" y="315" class="text">motorista_id: INTEGER?</text>
+  <text x="390" y="330" class="text">onibus_id: INTEGER</text>
+  <text x="390" y="345" class="text">linha_id: INTEGER?</text>
+  <text x="390" y="360" class="text">ts: TEXT</text>
+  <text x="390" y="375" class="text">lat: REAL</text>
+  <text x="390" y="390" class="text">lng: REAL</text>
+  <text x="390" y="405" class="text">speed_kmh: REAL</text>
+  <text x="390" y="420" class="text">accuracy_m: REAL</text>
+
+  <rect x="720" y="260" width="240" height="140" class="box"/>
+  <text x="730" y="280" class="title">RoutePoint</text>
+  <text x="730" y="300" class="text">id: INTEGER</text>
+  <text x="730" y="315" class="text">linha_id: INTEGER</text>
+  <text x="730" y="330" class="text">seq: INTEGER</text>
+  <text x="730" y="345" class="text">lat: REAL</text>
+  <text x="730" y="360" class="text">lng: REAL</text>
+
+  <rect x="980" y="260" width="260" height="180" class="box"/>
+  <text x="990" y="280" class="title">PanicEvent</text>
+  <text x="990" y="300" class="text">id: INTEGER</text>
+  <text x="990" y="315" class="text">bus_id: INTEGER</text>
+  <text x="990" y="330" class="text">motorista_id: INTEGER?</text>
+  <text x="990" y="345" class="text">level: TEXT</text>
+  <text x="990" y="360" class="text">message: TEXT</text>
+  <text x="990" y="375" class="text">ts: TEXT</text>
+  <text x="990" y="390" class="text">resolved: INTEGER</text>
+
+  <rect x="980" y="60" width="260" height="180" class="box"/>
+  <text x="990" y="80" class="title">User (Passageiro)</text>
+  <text x="990" y="100" class="text">id: INTEGER</text>
+  <text x="990" y="115" class="text">nome: TEXT</text>
+  <text x="990" y="130" class="text">sobrenome: TEXT</text>
+  <text x="990" y="145" class="text">cpf: TEXT</text>
+  <text x="990" y="160" class="text">email: TEXT</text>
+  <text x="990" y="175" class="text">password: TEXT</text>
+  <text x="990" y="190" class="text">role: TEXT</text>
+
+  <rect x="720" y="430" width="240" height="120" class="box"/>
+  <text x="730" y="450" class="title">HorariosLinha</text>
+  <text x="730" y="470" class="text">id: INTEGER</text>
+  <text x="730" y="485" class="text">linha_id: INTEGER</text>
+  <text x="730" y="500" class="text">horario: TEXT</text>
+
+  <line x1="180" y1="220" x2="210" y2="260" class="edge"/>
+  <line x1="500" y1="200" x2="340" y2="300" class="edge"/>
+  <line x1="820" y1="200" x2="340" y2="320" class="edge"/>
+  <line x1="500" y1="200" x2="500" y2="260" class="edge"/>
+  <line x1="180" y1="220" x2="420" y2="280" class="edge"/>
+  <line x1="820" y1="200" x2="700" y2="300" class="edge"/>
+  <line x1="820" y1="200" x2="820" y2="260" class="edge"/>
+  <line x1="500" y1="200" x2="600" y2="280" class="edge"/>
+  <line x1="500" y1="200" x2="1080" y2="260" class="edge"/>
+  <line x1="180" y1="220" x2="1080" y2="300" class="edge"/>
+</svg>

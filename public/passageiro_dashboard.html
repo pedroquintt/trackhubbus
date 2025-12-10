@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rastreamento de Ônibus - Palhoça</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow: hidden; }
+        
+        /* Header fixo */
+        .header { position: fixed; top: 0; left: 0; right: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100% ); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 2000; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        .header h2 { font-size: 20px; font-weight: 600; }
+        .header-info { display: flex; gap: 20px; align-items: center; font-size: 14px; }
+        .saldo { background: rgba(255,255,255,0.25); color:#fff; padding: 8px 15px; border-radius: 20px; font-weight: 700; font-size:16px }
+        .logout-btn { background: rgba(255,255,255,0.35); padding: 10px 18px; border-radius: 24px; text-decoration: none; color: white; font-weight: 800; font-size:16px; border:2px solid rgba(255,255,255,0.8); box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+        .logout-btn:hover { background: rgba(255,255,255,0.5); }
+        
+        /* Mapa em tela cheia */
+        #map { position: absolute; top: 120px; left: 0; right: 0; bottom: 80px; z-index: 1; }
+        
+        /* Botão de recentralizar */
+        .recenter-btn { position: fixed; bottom: 92px; right: 20px; z-index: 900; background: white; border: none; border-radius: 50%; width: 50px; height: 50px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); cursor: pointer; font-size: 24px; transition: transform 0.2s; }
+        .recenter-btn:hover { transform: scale(1.1); }
+        
+        /* Card de informações do ônibus (flutuante) */
+        .bus-info-card { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: white; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); padding: 20px; width: 90%; max-width: 400px; z-index: 1001; display: none; }
+        .bus-info-card.active { display: block; animation: slideUp 0.3s ease; }
+        @keyframes slideUp { from { transform: translate(-50%, 100px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+        .bus-info-card h3 { color: #5B2C91; margin-bottom: 10px; font-size: 20px; }
+        .bus-info-card p { color: #666; margin: 5px 0; font-size: 14px; }
+        .bus-info-card .eta { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px; border-radius: 10px; text-align: center; font-size: 24px; font-weight: 700; margin-top: 16px; }
+        .close-card { position: absolute; top: 10px; right: 10px; background: none; border: none; font-size: 24px; color: #999; cursor: pointer; }
+        .close-card:hover { color: #333; }
+        
+        /* Bottom bar */
+        .bottom-bar { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 15px; display: flex; justify-content: space-around; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); z-index: 1000; }
+        .bottom-bar a { text-decoration: none; color: #666; font-size: 12px; display: flex; flex-direction: column; align-items: center; gap: 5px; transition: color 0.3s; }
+        .bottom-bar a:hover { color: #5B2C91; }
+        .bottom-bar a span { font-size: 24px; }
+        
+        /* Ícones customizados para ônibus */
+        .bus-icon { font-size: 32px; }
+        /* Toolbar tipo RoutEasy */
+        .toolbar { position: fixed; top: 60px; left: 0; right: 0; background: #fff; padding: 12px 16px; display: grid; grid-template-columns: 180px 1fr 180px 180px; gap: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); z-index: 1900; }
+        .toolbar input { width: 100%; padding: 10px; border: 1px solid #e0e0e0; border-radius: 8px; }
+        .toolbar button { padding: 10px 14px; border: none; border-radius: 8px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-weight: 600; cursor: pointer; }
+        .toolbar .secondary { background: #5B2C91; }
+        .rotas-list { position: fixed; top: 156px; left: 0; right: 340px; background:#fff; padding: 10px 16px; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); z-index: 900 }
+        .rota-item { padding: 10px 12px; border: 1px solid #e0e0e0; border-radius: 10px; cursor: pointer; }
+        .rota-item:hover { background: #f3f4f6 }
+        /* Painel lateral de lista de ônibus */
+        .side-panel { position: fixed; top: 120px; right: 0; bottom: 80px; width: 320px; background: #fff; box-shadow: -2px 0 10px rgba(0,0,0,0.08); z-index: 1500; display: flex; flex-direction: column; }
+        .side-panel h3 { padding: 12px 16px; border-bottom: 1px solid #f0f0f0; color: #5B2C91; }
+        .list { flex: 1; overflow-y: auto; }
+        .list-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid #f5f5f5; }
+        .list-item .title { font-weight: 700; }
+        .list-item .meta { color: #666; font-size: 12px; }
+        .list-item .actions button { padding: 6px 10px; border-radius: 8px; border: none; background: #667eea; color: #fff; cursor: pointer; }
+        .geo-banner { position: fixed; top: 120px; left: 0; right: 340px; background: #fff3cd; color: #856404; padding: 10px 16px; border-bottom: 1px solid #ffeeba; z-index: 900; display: none; }
+        .geo-banner.show { display: block; }
+        .geo-status { position: fixed; top: 90px; right: 340px; background: #e7f5ff; color: #1c4e80; padding: 8px 10px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); font-size: 12px; z-index: 900; }
+    </style>
+    <!-- Socket.io -->
+    <script src="/socket.io/socket.io.js"></script>
+    
+    
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="topbar">
+            <div class="title"><h2>Bem-vindo, Passageiro!</h2></div>
+            <div class="actions">
+                <div id="saldo-display" class="saldo"></div>
+                <a href="/logout" class="btn secondary">Sair</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Botão de Recentralizar -->
+    <button class="recenter-btn" onclick="recenterMap()" title="Recentralizar no meu local">📍</button>
+    
+    <!-- Toolbar -->
+    <div class="toolbar">
+        <button id="btnGeo" class="btn">Minha localização</button>
+        <input id="minhaPos" type="text" placeholder="lat,lng (ex: -27.65,-48.65)" />
+        <button id="btnProx" class="btn secondary">Ônibus próximos</button>
+        <button id="btnTestGeo" class="btn ghost">Testar localização</button>
+    </div>
+    <div id="rotasList" class="rotas-list"></div>
+    <div id="geoBanner" class="geo-banner"></div>
+    <div id="geoStatus" class="geo-status"></div>
+
+    <!-- Mapa -->
+    <div id="map"></div>
+
+    <!-- Painel lateral -->
+    <div class="side-panel" style="pointer-events:auto;">
+        <h3 id="tituloLista">Ônibus próximos</h3>
+        <div id="listaOnibus" class="list"></div>
+    </div>
+    
+    <!-- Card de Informações do Ônibus -->
+    <div id="bus-info-card" class="bus-info-card">
+        <button class="close-card" onclick="closeBusInfo()">×</button>
+        <h3 id="bus-name">Carregando...</h3>
+        <p id="bus-route"></p>
+        <p id="bus-destination"></p>
+        <div class="eta" id="bus-eta">Calculando...</div>
+    </div>
+    
+    <!-- Bottom Bar -->
+    <div class="bottom-bar">
+        <a href="/passageiro/dashboard">
+            <span>🏠</span>
+            <span>Início</span>
+        </a>
+        <a href="/passageiro/rotas" id="routesTab">
+            <span>🛣️</span>
+            <span>Rotas</span>
+        </a>
+        <a href="/passageiro/creditos">
+            <span>💳</span>
+            <span>Créditos</span>
+        </a>
+        <a href="/passageiro/conta">
+            <span>👤</span>
+            <span>Conta</span>
+        </a>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <script>
+        // 1. Inicializa o mapa (Palhoça, SC )
+        const map = L.map('map').setView([-27.659, -48.675], 14);
+        let focusMarker = null;
+        const focusIcon = L.divIcon({ className: 'bus-focus', html: '<div style="font-size: 36px;">🚌</div>', iconSize: [36, 36] });
+
+        // 2. Adiciona o tile layer (OpenStreetMap)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+        } ).addTo(map);
+
+        // 3. Variáveis globais
+        let userMarker = null;
+        let userLocation = null;
+        const busMarkers = {};
+        const busData = {}; // Armazena informações dos ônibus
+
+        // 4. Geolocalização do usuário (watch)
+        let geoWatchId = null
+        function updateGeoBanner(msg){ const el = document.getElementById('geoBanner'); if (!el) return; if (msg){ el.textContent = msg; el.classList.add('show') } else { el.textContent=''; el.classList.remove('show') } }
+        function updateGeoStatus(lat,lng,acc,ts){ const el = document.getElementById('geoStatus'); if (!el) return; const t = ts? new Date(ts).toLocaleTimeString() : new Date().toLocaleTimeString(); const a = acc!=null? `${Math.round(acc)}m` : '-'; el.textContent = `Lat ${lat.toFixed(5)}, Lng ${lng.toFixed(5)} • precisão ${a} • ${t}` }
+        function startGeoWatch(){
+            if (!navigator.geolocation) { updateGeoBanner('Geolocalização não suportada.'); return }
+            if (geoWatchId) { navigator.geolocation.clearWatch(geoWatchId); geoWatchId = null }
+            navigator.geolocation.getCurrentPosition((position)=>{
+                userLocation = [position.coords.latitude, position.coords.longitude]
+                document.getElementById('minhaPos').value = `${position.coords.latitude.toFixed(5)},${position.coords.longitude.toFixed(5)}`
+                if (!userMarker) {
+                    userMarker = L.marker(userLocation, { icon: L.divIcon({ className: 'user-icon', html: '<div style="background: #4285F4; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3);"></div>', iconSize: [20,20] }) }).addTo(map).bindPopup('Você está aqui')
+                } else { userMarker.setLatLng(userLocation) }
+                map.setView(userLocation, 15)
+                refreshNearby()
+                updateGeoStatus(position.coords.latitude, position.coords.longitude, position.coords.accuracy, Date.now())
+            }, ()=>{}, { enableHighAccuracy:true, maximumAge:60000, timeout:8000 })
+            geoWatchId = navigator.geolocation.watchPosition((position)=>{
+                userLocation = [position.coords.latitude, position.coords.longitude]
+                document.getElementById('minhaPos').value = `${position.coords.latitude.toFixed(5)},${position.coords.longitude.toFixed(5)}`
+                if (!userMarker) {
+                    userMarker = L.marker(userLocation, {
+                        icon: L.divIcon({ className: 'user-icon', html: '<div style="background: #4285F4; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3);"></div>', iconSize: [20,20] })
+                    }).addTo(map).bindPopup('<b>Você está aqui</b>')
+                } else { userMarker.setLatLng(userLocation) }
+                map.setView(userLocation, 15)
+                refreshNearby()
+                updateGeoStatus(position.coords.latitude, position.coords.longitude, position.coords.accuracy, Date.now())
+            }, (error)=>{
+                if (error && error.code===1) { updateGeoBanner('Permissão de localização negada. Ative nas configurações do navegador.') }
+                else { updateGeoBanner('Não foi possível obter sua localização. Verifique as permissões e o GPS.') }
+            }, { enableHighAccuracy:true, maximumAge:15000, timeout:10000 })
+        }
+        startGeoWatch()
+
+        // 5. Função para recentralizar o mapa
+        function recenterMap() {
+            if (userLocation) {
+                map.setView(userLocation, 15);
+            } else {
+                map.setView([-27.659, -48.675], 14);
+            }
+        }
+
+        // 6. Conecta ao WebSocket
+        const socket = io();
+
+        // 7. Ouve por atualizações de localização dos ônibus
+        socket.on('bus_location_update', (data) => {
+            const { onibus_id, latitude, longitude } = data;
+            const latLng = [latitude, longitude];
+
+            // Simula informações do ônibus (na prática, viria do banco de dados)
+            if (!busData[onibus_id]) {
+                busData[onibus_id] = {
+                    name: `Ônibus #${onibus_id}`,
+                    route: 'Linha 01 - Palhoça/Floripa',
+                    destination: 'Centro Florianópolis'
+                };
+            }
+
+            if (busMarkers[onibus_id]) {
+                // Atualiza a posição do marcador existente
+                busMarkers[onibus_id].setLatLng(latLng);
+            } else {
+                // Cria um novo marcador para o ônibus
+                const busIcon = L.divIcon({
+                    className: 'bus-icon',
+                    html: '<div style="font-size: 32px;">🚌</div>',
+                    iconSize: [32, 32]
+                });
+
+                const marker = L.marker(latLng, { icon: busIcon }).addTo(map);
+                
+                // Adiciona evento de clique no marcador
+                marker.on('click', () => {
+                    showBusInfo(onibus_id, latLng);
+                });
+
+                busMarkers[onibus_id] = marker;
+            }
+        });
+
+        // 8. Função para mostrar informações do ônibus
+        function showBusInfo(onibus_id, busLocation) {
+            const bus = busData[onibus_id];
+            
+            document.getElementById('bus-name').textContent = bus.name;
+            document.getElementById('bus-route').textContent = `📍 ${bus.route}`;
+            document.getElementById('bus-destination').textContent = `🎯 Destino: ${bus.destination}`;
+            
+            // Calcula ETA (tempo estimado de chegada)
+            if (userLocation) {
+                const distance = map.distance(userLocation, busLocation); // em metros
+                const speedKmH = 30; // velocidade média do ônibus (30 km/h)
+                const timeMinutes = Math.round((distance / 1000) / speedKmH * 60);
+                
+                document.getElementById('bus-eta').textContent = timeMinutes > 0 
+                    ? `⏱️ Chega em ${timeMinutes} minuto${timeMinutes > 1 ? 's' : ''}`
+                    : '✅ Ônibus próximo!';
+            } else {
+                document.getElementById('bus-eta').textContent = '📍 Ative a localização para ver o tempo de chegada';
+            }
+            
+            document.getElementById('bus-info-card').classList.add('active');
+        }
+
+        // 9. Fechar card
+        function closeBusInfo() { document.getElementById('bus-info-card').classList.remove('active'); }
+
+        // 10. Toolbar: geolocalização
+        document.getElementById('btnGeo').onclick = ()=> startGeoWatch()
+        document.getElementById('btnTestGeo').onclick = ()=>{
+            if (!navigator.geolocation) return
+            navigator.geolocation.getCurrentPosition((position)=>{
+                updateGeoStatus(position.coords.latitude, position.coords.longitude, position.coords.accuracy, Date.now())
+            }, ()=>{}, { enableHighAccuracy:true, maximumAge:0, timeout:8000 })
+        }
+        document.addEventListener('visibilitychange', ()=>{ if (document.hidden) { if (geoWatchId) { navigator.geolocation.clearWatch(geoWatchId); geoWatchId=null } } else { startGeoWatch() } })
+
+        // 11. Destinos: carregar waypoints e auto completar
+        let destLat = null, destLng = null, selectedLineId = null
+        fetch('/api/lines').then(r=>r.json()).then(arr=>{
+            const cont = document.getElementById('rotasList')
+            cont.innerHTML = ''
+            arr.forEach(line=>{
+                const div = document.createElement('div')
+                div.className = 'rota-item'
+                div.textContent = `${line.nome} — ${line.destino}`
+                div.onclick = async ()=>{
+                    selectedLineId = line.id
+                    const route = await fetch(`/api/line/route?id=${line.id}`).then(r=>r.json()).catch(()=>({points:[]}))
+                    if (route.points && route.points.length>0){ const last = route.points[route.points.length-1]; destLat=last.lat; destLng=last.lng }
+                    else { destLat=null; destLng=null }
+                    refreshNearby(true)
+                }
+                cont.appendChild(div)
+            })
+        })
+
+        
+
+        // 12. Ônibus próximos com ETA (manual e automático)
+        let routeLayer = null
+        async function refreshNearby(autoFocus){
+            const pos = document.getElementById('minhaPos').value.trim()
+            if (!pos && !userLocation) return
+            const [lat,lng] = pos? pos.split(',').map(Number) : userLocation
+            let url = `/api/buses/near?lat=${lat}&lng=${lng}`
+            if (destLat!=null && destLng!=null) url += `&destLat=${destLat}&destLng=${destLng}`
+            if (selectedLineId!=null) url += `&lineId=${selectedLineId}`
+            const list = await fetch(url).then(r=>r.json()).catch(()=>[])
+            document.getElementById('tituloLista').textContent = `Ônibus próximos (${list.length})`
+            const panel = document.getElementById('listaOnibus')
+            panel.innerHTML = ''
+            list.forEach(item=>{
+                const row = document.createElement('div')
+                row.className = 'list-item'
+                const left = document.createElement('div')
+                const distLabel = (item.distMeters!=null) ? (item.distMeters>1000? `${(item.distMeters/1000).toFixed(1)} km` : `${item.distMeters} m`) : ''
+                const lineLabel = item.linha_nome ? item.linha_nome : `Linha ${item.linha_id}`
+                const plateLabel = item.placa? ` • ${item.placa}` : ''
+                const extra = (item.etaTotal!=null && destLat!=null) ? ` • até destino ${item.etaTotal} min` : ''
+                left.innerHTML = `<div class="title">${lineLabel}${plateLabel}</div><div class="meta">ETA ${item.etaMinutes} min • ${item.arrivalTime}${distLabel? ' • '+distLabel:''}${extra}</div>`
+                const actions = document.createElement('div')
+                actions.className = 'actions'
+                const btnRota = document.createElement('button')
+                btnRota.textContent = 'Ver rota'
+                btnRota.onclick = async ()=>{
+                    map.setView([item.lat,item.lng], 14)
+                    let points = []
+                    if (destLat!=null && destLng!=null){
+                        const seg = await fetch(`/api/line/segment?id=${item.linha_id}&fromLat=${item.lat}&fromLng=${item.lng}&toLat=${destLat}&toLng=${destLng}`).then(r=>r.json()).catch(()=>({points:[]}))
+                        points = seg.points || []
+                    } else {
+                        const route = await fetch(`/api/line/route?id=${item.linha_id}`).then(r=>r.json()).catch(()=>({points:[]}))
+                        points = route.points || []
+                    }
+                    if (routeLayer) { map.removeLayer(routeLayer); routeLayer=null }
+                    if (points && points.length>1){ routeLayer = L.polyline(points.map(p=>[p.lat,p.lng]), { color:'#5B2C91', weight:4 }).addTo(map) }
+                }
+                actions.appendChild(btnRota)
+                row.appendChild(left)
+                row.appendChild(actions)
+                panel.appendChild(row)
+            })
+            if (autoFocus===true && list.length>0){
+                let candidates = list
+                if (selectedLineId!=null) candidates = candidates.filter(x=> Number(x.linha_id)===Number(selectedLineId))
+                let best = candidates[0]
+                if (userLocation && candidates.length>1){
+                    let md = Infinity
+                    candidates.forEach(x=>{ const d = map.distance(userLocation, [x.lat,x.lng]); if (d<md){ md=d; best=x } })
+                }
+                if (best){
+                    if (focusMarker) { map.removeLayer(focusMarker); focusMarker=null }
+                    focusMarker = L.marker([best.lat, best.lng], { icon: focusIcon }).addTo(map)
+                    map.setView([best.lat, best.lng], 15)
+                    const id = best.busId || `bus_${best.linha_id}`
+                    const lineLabel = best.linha_nome ? best.linha_nome : `Linha ${best.linha_id}`
+                    busData[id] = { name: `${lineLabel}`, route: lineLabel, destination: destLat!=null? 'Destino selecionado' : '' }
+                    showBusInfo(id, [best.lat, best.lng])
+                }
+            }
+        }
+        document.getElementById('btnProx').onclick = ()=> refreshNearby(false)
+        const routesTab = document.getElementById('routesTab')
+        if (routesTab) routesTab.onclick = (e)=>{ e.preventDefault(); if (selectedLineId!=null) { refreshNearby(true) } else { const li=document.getElementById('lineInput'); if (li) li.focus(); updateGeoBanner('Escolha uma linha para ver ônibus e ETA') } }
+        
+        // atualização manual via botão; lista permanece estática até nova ação
+    </script>
+</body>
+</html>

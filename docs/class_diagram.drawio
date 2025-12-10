@@ -1,0 +1,102 @@
+<mxfile host="app.diagrams.net" modified="2025-12-06T00:00:00Z" agent="TRUCKHUB" version="20.6.3" etag="uml-1">
+  <diagram id="uml-main" name="Class Diagram">
+    <mxGraphModel dx="1280" dy="720" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- Classes -->
+        <mxCell id="class_motorista" value="<<Entity>> Motorista\n- id: INTEGER {PK}\n- nome: TEXT\n- cpf: TEXT {UNIQUE}\n- telefone: TEXT?\n- foto: TEXT?\n- password: TEXT (hash)" style="rounded=0;whiteSpace=wrap;html=1;shape=rectangle;fillColor=#ffffff;strokeColor=#000000;align=left;fontSize=12" vertex="1" parent="1">
+          <mxGeometry x="60" y="60" width="240" height="160" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="class_onibus" value="<<Entity>> Ônibus\n- id: INTEGER {PK}\n- placa: TEXT {UNIQUE}\n- modelo: TEXT\n- capacidade: INTEGER" style="rounded=0;whiteSpace=wrap;html=1;shape=rectangle;fillColor=#ffffff;strokeColor=#000000;align=left;fontSize=12" vertex="1" parent="1">
+          <mxGeometry x="380" y="60" width="240" height="140" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="class_linha" value="<<Entity>> Linha\n- id: INTEGER {PK}\n- nome: TEXT\n- origem: TEXT\n- destino: TEXT" style="rounded=0;whiteSpace=wrap;html=1;shape=rectangle;fillColor=#ffffff;strokeColor=#000000;align=left;fontSize=12" vertex="1" parent="1">
+          <mxGeometry x="700" y="60" width="240" height="140" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="class_onibus_linhas" value="<<Assoc>> OnibusLinha\n- onibus_id: INTEGER {PK,FK}\n- linha_id: INTEGER {FK}\n- UNIQUE(onibus_id)" style="rounded=0;whiteSpace=wrap;html=1;shape=rectangle;fillColor=#ffffff;strokeColor=#000000;align=left;fontSize=12" vertex="1" parent="1">
+          <mxGeometry x="540" y="230" width="220" height="100" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="class_driver_session" value="<<Entity>> DriverSession\n- id: INTEGER {PK}\n- motorista_id: INTEGER {FK}\n- onibus_id: INTEGER {FK}\n- linha_id: INTEGER {FK}\n- ts_start: TEXT\n- active: INTEGER {0/1}\n- ts_end: TEXT?\n- RULE: 1 sessão ativa por motorista" style="rounded=0;whiteSpace=wrap;html=1;shape=rectangle;fillColor=#ffffff;strokeColor=#000000;align=left;fontSize=12" vertex="1" parent="1">
+          <mxGeometry x="60" y="260" width="300" height="200" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="class_tracking_point" value="<<Entity>> TrackingPoint\n- id: INTEGER {PK}\n- motorista_id: INTEGER? {FK}\n- onibus_id: INTEGER {FK}\n- linha_id: INTEGER? {FK}\n- ts: TEXT\n- lat: REAL\n- lng: REAL\n- speed_kmh: REAL?\n- accuracy_m: REAL?\n- INDEX(onibus_id, ts)" style="rounded=0;whiteSpace=wrap;html=1;shape=rectangle;fillColor=#ffffff;strokeColor=#000000;align=left;fontSize=12" vertex="1" parent="1">
+          <mxGeometry x="380" y="260" width="320" height="220" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="class_route_point" value="<<Entity>> RoutePoint\n- id: INTEGER {PK}\n- linha_id: INTEGER {FK}\n- seq: INTEGER\n- lat: REAL\n- lng: REAL\n- UNIQUE(linha_id, seq)" style="rounded=0;whiteSpace=wrap;html=1;shape=rectangle;fillColor=#ffffff;strokeColor=#000000;align=left;fontSize=12" vertex="1" parent="1">
+          <mxGeometry x="720" y="260" width="240" height="160" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="class_panic_event" value="<<Entity>> PanicEvent\n- id: INTEGER {PK}\n- bus_id: INTEGER {FK}\n- motorista_id: INTEGER? {FK}\n- level: TEXT\n- message: TEXT\n- ts: TEXT\n- resolved: INTEGER {0/1}\n- INDEX(bus_id, resolved)" style="rounded=0;whiteSpace=wrap;html=1;shape=rectangle;fillColor=#ffffff;strokeColor=#000000;align=left;fontSize=12" vertex="1" parent="1">
+          <mxGeometry x="980" y="260" width="260" height="200" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="class_user" value="<<Entity>> User (Passageiro)\n- id: INTEGER {PK}\n- nome: TEXT\n- sobrenome: TEXT\n- cpf: TEXT {UNIQUE}\n- email: TEXT {UNIQUE}\n- password: TEXT (hash)\n- role: TEXT {'passenger'|'driver'|'admin'}" style="rounded=0;whiteSpace=wrap;html=1;shape=rectangle;fillColor=#ffffff;strokeColor=#000000;align=left;fontSize=12" vertex="1" parent="1">
+          <mxGeometry x="980" y="60" width="260" height="200" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="class_horarios" value="<<Entity>> HorariosLinha\n- id: INTEGER {PK}\n- linha_id: INTEGER {FK}\n- horario: TEXT" style="rounded=0;whiteSpace=wrap;html=1;shape=rectangle;fillColor=#ffffff;strokeColor=#000000;align=left;fontSize=12" vertex="1" parent="1">
+          <mxGeometry x="720" y="430" width="240" height="120" as="geometry"/>
+        </mxCell>
+
+        <!-- Relationships -->
+        <mxCell id="edge_motorista_session" value="1 .. *" style="endArrow=block;html=1;strokeColor=#000000" edge="1" parent="1" source="class_motorista" target="class_driver_session">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="edge_onibus_session" value="1 .. *" style="endArrow=block;html=1;strokeColor=#000000" edge="1" parent="1" source="class_onibus" target="class_driver_session">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="edge_linha_session" value="1 .. *" style="endArrow=block;html=1;strokeColor=#000000" edge="1" parent="1" source="class_linha" target="class_driver_session">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="edge_onibus_tracking" value="1 .. *" style="endArrow=block;html=1;strokeColor=#000000" edge="1" parent="1" source="class_onibus" target="class_tracking_point">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="edge_motorista_tracking" value="0..1 .. *" style="endArrow=block;html=1;strokeColor=#000000" edge="1" parent="1" source="class_motorista" target="class_tracking_point">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="edge_linha_tracking" value="0..1 .. *" style="endArrow=block;html=1;strokeColor=#000000" edge="1" parent="1" source="class_linha" target="class_tracking_point">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="edge_linha_route" value="1 .. *" style="endArrow=block;html=1;strokeColor=#000000" edge="1" parent="1" source="class_linha" target="class_route_point">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="edge_onibus_linhas_onibus" value="1 .. 1" style="endArrow=block;html=1;strokeColor=#000000" edge="1" parent="1" source="class_onibus" target="class_onibus_linhas">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="edge_onibus_linhas_linha" value="1 .. * (historicamente)\n1 .. 1 (ativo)" style="endArrow=block;html=1;strokeColor=#000000" edge="1" parent="1" source="class_linha" target="class_onibus_linhas">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="edge_onibus_panic" value="1 .. *" style="endArrow=block;html=1;strokeColor=#000000" edge="1" parent="1" source="class_onibus" target="class_panic_event">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="edge_motorista_panic" value="0..1 .. *" style="endArrow=block;html=1;strokeColor=#000000" edge="1" parent="1" source="class_motorista" target="class_panic_event">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Notes -->
+        <mxCell id="note_auth" value="Notas:\n- Senhas armazenadas com hash\n- Sessões ativas: 1 por motorista\n- Rotas reais priorizadas (route_points)\n- Ônibus próximos usam posição real quando disponível" style="rounded=0;whiteSpace=wrap;html=1;shape=rectangle;fillColor=#fff9c4;strokeColor=#c59c00;align=left;fontSize=12" vertex="1" parent="1">
+          <mxGeometry x="1250" y="60" width="300" height="200" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

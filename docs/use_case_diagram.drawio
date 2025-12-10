@@ -1,0 +1,87 @@
+<mxfile host="app.diagrams.net" modified="2025-12-06T00:00:00Z" agent="TRUCKHUB" version="20.6.3" etag="uc-1">
+  <diagram id="uc-main" name="Use Case Diagram">
+    <mxGraphModel dx="1280" dy="720" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- Actors -->
+        <mxCell id="actor_passenger" value="Passageiro" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1" vertex="1" parent="1">
+          <mxGeometry x="120" y="140" width="40" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="actor_driver" value="Motorista" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1" vertex="1" parent="1">
+          <mxGeometry x="120" y="380" width="40" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="actor_admin" value="Admin" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1" vertex="1" parent="1">
+          <mxGeometry x="120" y="580" width="40" height="80" as="geometry"/>
+        </mxCell>
+
+        <!-- System boundary -->
+        <mxCell id="sys_boundary" value="Sistema TRUCK HUB BUS" style="shape=rectangle;rounded=1;whiteSpace=wrap;html=1;strokeColor=#111827;fillColor=#ffffff" vertex="1" parent="1">
+          <mxGeometry x="300" y="80" width="1100" height="700" as="geometry"/>
+        </mxCell>
+
+        <!-- Use cases -->
+        <mxCell id="uc_view_near" value="Ver ônibus próximos" style="ellipse;whiteSpace=wrap;html=1;strokeColor=#5B2C91;fillColor=#eef2ff" vertex="1" parent="sys_boundary">
+          <mxGeometry x="80" y="80" width="220" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc_select_dest" value="Selecionar destino" style="ellipse;whiteSpace=wrap;html=1;strokeColor=#5B2C91;fillColor=#eef2ff" vertex="1" parent="sys_boundary">
+          <mxGeometry x="80" y="180" width="220" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc_see_eta" value="Ver ETA e rota" style="ellipse;whiteSpace=wrap;html=1;strokeColor=#5B2C91;fillColor=#eef2ff" vertex="1" parent="sys_boundary">
+          <mxGeometry x="80" y="280" width="220" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc_driver_login" value="Login motorista" style="ellipse;whiteSpace=wrap;html=1;strokeColor=#5B2C91;fillColor=#eef2ff" vertex="1" parent="sys_boundary">
+          <mxGeometry x="420" y="420" width="220" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc_send_track" value="Enviar ponto de rastreamento" style="ellipse;whiteSpace=wrap;html=1;strokeColor=#5B2C91;fillColor=#eef2ff" vertex="1" parent="sys_boundary">
+          <mxGeometry x="420" y="520" width="260" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc_panic" value="Emitir pânico" style="ellipse;whiteSpace=wrap;html=1;strokeColor=#ef4444;fillColor=#fee2e2" vertex="1" parent="sys_boundary">
+          <mxGeometry x="420" y="620" width="200" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc_admin_assign" value="Associar ônibus à linha e posicionar" style="ellipse;whiteSpace=wrap;html=1;strokeColor=#5B2C91;fillColor=#eef2ff" vertex="1" parent="sys_boundary">
+          <mxGeometry x="780" y="520" width="320" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc_admin_routes" value="Gerenciar rotas reais" style="ellipse;whiteSpace=wrap;html=1;strokeColor=#5B2C91;fillColor=#eef2ff" vertex="1" parent="sys_boundary">
+          <mxGeometry x="780" y="420" width="240" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Associations -->
+        <mxCell id="edge_passenger_view" style="endArrow=block;html=1;strokeColor=#000" edge="1" parent="1" source="actor_passenger" target="uc_view_near">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_passenger_select" style="endArrow=block;html=1;strokeColor=#000" edge="1" parent="1" source="actor_passenger" target="uc_select_dest">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_passenger_eta" style="endArrow=block;html=1;strokeColor=#000" edge="1" parent="1" source="actor_passenger" target="uc_see_eta">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_driver_login" style="endArrow=block;html=1;strokeColor=#000" edge="1" parent="1" source="actor_driver" target="uc_driver_login">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_driver_track" style="endArrow=block;html=1;strokeColor=#000" edge="1" parent="1" source="actor_driver" target="uc_send_track">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_driver_panic" style="endArrow=block;html=1;strokeColor=#000" edge="1" parent="1" source="actor_driver" target="uc_panic">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_admin_assign" style="endArrow=block;html=1;strokeColor=#000" edge="1" parent="1" source="actor_admin" target="uc_admin_assign">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_admin_routes" style="endArrow=block;html=1;strokeColor=#000" edge="1" parent="1" source="actor_admin" target="uc_admin_routes">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Includes/Extends -->
+        <mxCell id="edge_include_eta" value="<<include>>" style="dashed=1;endArrow=block;html=1;strokeColor=#6b7280" edge="1" parent="sys_boundary" source="uc_view_near" target="uc_see_eta">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_include_select" value="<<include>>" style="dashed=1;endArrow=block;html=1;strokeColor=#6b7280" edge="1" parent="sys_boundary" source="uc_view_near" target="uc_select_dest">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

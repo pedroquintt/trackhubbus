@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Admin - Ônibus Palhoça</title>
+<link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+<div class="nav">
+  <div class="brand"><span class="brand-dot"></span> Ônibus Palhoça</div>
+  <div class="actions"><button class="link" onclick="location.href='/'">Sair</button></div>
+</div>
+<div class="container">
+  <h1>Administração</h1>
+  <div class="card">
+    <h2>Cadastro de Empresa</h2>
+    <form id="formEmpresa" class="grid">
+      <div class="field"><div class="label">Nome</div><input type="text" id="empresaNome" placeholder="Nome da empresa" required /></div>
+      <button type="submit" class="btn">Cadastrar</button>
+    </form>
+    <div id="empresaResultado" class="result"></div>
+  </div>
+  <div class="card">
+    <h2>Cadastro de Linha</h2>
+    <form id="formLinha" class="grid">
+      <div class="field"><div class="label">Empresa ID</div><input type="number" id="linhaEmpresaId" placeholder="ID da empresa" required /></div>
+      <div class="field"><div class="label">Nome</div><input type="text" id="linhaNome" placeholder="Nome da linha" required /></div>
+      <button type="submit" class="btn">Cadastrar</button>
+    </form>
+    <div id="linhaResultado" class="result"></div>
+  </div>
+  <div class="card">
+    <h2>Cadastro de Ônibus</h2>
+    <form id="formOnibus" class="grid">
+      <div class="field"><div class="label">Linha ID</div><input type="number" id="onibusLinhaId" placeholder="ID da linha" required /></div>
+      <div class="field"><div class="label">Código</div><input type="text" id="onibusCodigo" placeholder="Código do ônibus" required /></div>
+      <button type="submit" class="btn">Cadastrar</button>
+    </form>
+    <div id="onibusResultado" class="result"></div>
+  </div>
+  <div class="card">
+    <h2>Rota da Linha</h2>
+    <div class="toolbar"><span class="badge">Formato: lat,lng por linha</span></div>
+    <form id="formRota" class="grid">
+      <div class="field"><div class="label">Linha ID</div><input type="number" id="rotaLinhaId" placeholder="ID da linha" required /></div>
+      <div class="field" style="grid-column: span 2"><textarea id="rotaPontos" placeholder="-27.646,-48.654\n-27.648,-48.651" rows="6"></textarea></div>
+      <button type="submit" class="btn secondary">Salvar Rota</button>
+    </form>
+    <div id="rotaResultado" class="result"></div>
+  </div>
+  <div class="card">
+    <h2>Horários da Linha</h2>
+    <div class="toolbar"><span class="badge">Formato: HH:MM por linha</span></div>
+    <form id="formHorario" class="grid">
+      <div class="field"><div class="label">Linha ID</div><input type="number" id="horLinhaId" placeholder="ID da linha" required /></div>
+      <div class="field" style="grid-column: span 2"><textarea id="horarios" placeholder="06:00\n07:00\n08:00" rows="6"></textarea></div>
+      <button type="submit" class="btn secondary">Salvar Horários</button>
+    </form>
+    <div id="horarioResultado" class="result"></div>
+  </div>
+  <div class="card">
+    <h2>Anúncios</h2>
+    <form id="formAd" class="grid">
+      <div class="field"><div class="label">Título</div><input type="text" id="adTitle" placeholder="Título" /></div>
+      <div class="field"><div class="label">Imagem URL</div><input type="text" id="adImage" placeholder="https://..." /></div>
+      <div class="field"><div class="label">Link URL</div><input type="text" id="adLink" placeholder="https://..." /></div>
+      <button type="submit" class="btn">Cadastrar Anúncio</button>
+    </form>
+    <div id="adResultado" class="result"></div>
+  </div>
+</div>
+<script src="/app.js"></script>
+</body>
+</html>
